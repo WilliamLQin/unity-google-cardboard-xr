@@ -2,7 +2,7 @@ Unofficial Cardboard XR Unity SDK
 ==============
 This is a work-in-progress unofficial Google Cardboard XR Unity SDK.
 
-Based on the [mobfish Cardboard Unity SDK](https://github.com/mobfishgmbh/Cardboard-VR-Unity-SDK), this project aims to also integrate AR into Cardboard.
+Forked off of the [mobfish Cardboard Unity SDK](https://github.com/mobfishgmbh/Cardboard-VR-Unity-SDK), this project aims to also integrate AR into Cardboard.
 
 Official Google Cardboard SDK:  
 https://github.com/googlevr/cardboard
