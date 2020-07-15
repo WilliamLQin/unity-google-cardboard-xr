@@ -60,7 +60,6 @@ namespace CardboardXR
             CardboardManager.enableVRViewChangedEvent += VRViewChanged;
         }
 
-
         private void OnDestroy()
         {
             CardboardManager.deviceParamsChangeEvent -= TriggerRefresh;
