@@ -66,20 +66,25 @@ namespace CardboardXR
             CardboardManager.enableVRViewChangedEvent -= VRViewChanged;
         }
 
+        // Scans QR code and enables VR view
         private void ScanQRCode()
         {
+            Screen.orientation = ScreenOrientation.LandscapeLeft;
+            CardboardManager.SetVRViewEnable(true);
             CardboardManager.ScanQrCode();
             SetEnableQROverlay(true);
         }
 
+        // Switches CardboardXR view to non-CardboardXR view
         private void SwitchVRView()
         {
             CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
         }
 
+        // Resets orientation
         private void CloseVRView()
         {
-            CardboardManager.SetVRViewEnable(false);
+            Screen.orientation = ScreenOrientation.AutoRotation;
         }
 
         private void VRViewChanged()
@@ -90,11 +95,11 @@ namespace CardboardXR
 
         private void SetUIStatus(bool isVREnabled)
         {
-            scanQRButton.gameObject.SetActive(isVREnabled);
-            closeButton.gameObject.SetActive(isVREnabled);
+            scanQRButton.gameObject.SetActive(true);
+            closeButton.gameObject.SetActive(true);
             splitLine.SetActive(isVREnabled);
 
-            switchVRButton.gameObject.SetActive(!isVREnabled);
+            switchVRButton.gameObject.SetActive(true);
 
             if (isVREnabled)
                 TriggerRefresh();
