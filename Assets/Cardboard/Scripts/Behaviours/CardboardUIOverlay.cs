@@ -66,6 +66,7 @@ namespace CardboardXR
             CardboardManager.enableVRViewChangedEvent -= VRViewChanged;
         }
 
+        // Scans QR code and enables VR view
         private void ScanQRCode()
         {
             Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -74,11 +75,13 @@ namespace CardboardXR
             SetEnableQROverlay(true);
         }
 
+        // Switches CardboardXR view to non-CardboardXR view
         private void SwitchVRView()
         {
             CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
         }
 
+        // Resets orientation
         private void CloseVRView()
         {
             Screen.orientation = ScreenOrientation.AutoRotation;
