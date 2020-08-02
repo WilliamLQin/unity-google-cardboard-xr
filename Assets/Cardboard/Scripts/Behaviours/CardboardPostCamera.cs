@@ -26,18 +26,18 @@ namespace CardboardXR
             ApplyRenderTexture();
             OnCardboardEnabledChanged();
             CardboardManager.renderTextureResetEvent += ApplyRenderTexture;
-            CardboardManager.enableVRViewChangedEvent += OnCardboardEnabledChanged;
+            CardboardManager.isCardboardViewOnChangedEvent += OnCardboardEnabledChanged;
         }
 
         private void OnDestroy()
         {
             CardboardManager.renderTextureResetEvent -= ApplyRenderTexture;
-            CardboardManager.enableVRViewChangedEvent -= OnCardboardEnabledChanged;
+            CardboardManager.isCardboardViewOnChangedEvent -= OnCardboardEnabledChanged;
         }
 
         private void OnPostRender()
         {
-            if (!CardboardManager.profileAvailable)
+            if (!CardboardManager.isProfileAvailable)
                 return;
 
             eyeMaterialLeft.SetPass(0);
@@ -54,7 +54,7 @@ namespace CardboardXR
 
         private void OnCardboardEnabledChanged()
         {
-            postCam.enabled = CardboardManager.enableVRView;
+            postCam.enabled = CardboardManager.isCardboardViewOn;
         }
     }
 }

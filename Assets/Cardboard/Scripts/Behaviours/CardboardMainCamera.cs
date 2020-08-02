@@ -37,7 +37,7 @@ namespace CardboardXR
             SetupRenderTexture();
 
             CardboardManager.InitCardboard();
-            CardboardManager.SetVRViewEnable(defaultEnableCardboardView);
+            CardboardManager.SetCardboardViewOn(defaultEnableCardboardView);
         }
 
         private Camera SpawnCamera(string name)
@@ -53,15 +53,15 @@ namespace CardboardXR
         private void Start()
         {
             RefreshCamera();
-            CardboardManager.deviceParamsChangeEvent += RefreshCamera;
+            CardboardManager.deviceParamsChangedEvent += RefreshCamera;
             OnCardboardEnabledChanged();
-            CardboardManager.enableVRViewChangedEvent += OnCardboardEnabledChanged;
+            CardboardManager.isCardboardViewOnChangedEvent += OnCardboardEnabledChanged;
         }
 
         private void OnDestroy()
         {
-            CardboardManager.deviceParamsChangeEvent -= RefreshCamera;
-            CardboardManager.enableVRViewChangedEvent -= OnCardboardEnabledChanged;
+            CardboardManager.deviceParamsChangedEvent -= RefreshCamera;
+            CardboardManager.isCardboardViewOnChangedEvent -= OnCardboardEnabledChanged;
         }
 
         private void SetupRenderTexture()
@@ -100,7 +100,7 @@ namespace CardboardXR
 
         private void OnCardboardEnabledChanged()
         {
-            bool cardboardViewOn = CardboardManager.enableVRView;
+            bool cardboardViewOn = CardboardManager.isCardboardViewOn;
             mainCamera.enabled = !cardboardViewOn;
             leftCamera.enabled = cardboardViewOn;
             rightCamera.enabled = cardboardViewOn;
@@ -109,7 +109,7 @@ namespace CardboardXR
 
         private void RefreshCamera()
         {
-            if (!CardboardManager.profileAvailable)
+            if (!CardboardManager.isProfileAvailable)
             {
                 return;
             }

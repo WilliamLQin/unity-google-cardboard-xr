@@ -21,12 +21,12 @@ namespace CardboardXR
         public static Matrix4x4 eyeFromHeadMatrixLeft { get; private set; }
         public static Matrix4x4 eyeFromHeadMatrixRight { get; private set; }
 
-        public static bool profileAvailable { get; private set; }
-        public static bool enableVRView { get; private set; }
+        public static bool isProfileAvailable { get; private set; }
+        public static bool isCardboardViewOn { get; private set; }
 
-        public static event Action deviceParamsChangeEvent;
+        public static event Action deviceParamsChangedEvent;
         public static event Action renderTextureResetEvent;
-        public static event Action enableVRViewChangedEvent;
+        public static event Action isCardboardViewOnChangedEvent;
 
         /// <summary>
         /// Initializes the Cardboard session
@@ -84,11 +84,11 @@ namespace CardboardXR
         /// <summary>
         /// Enables or disables the Cardboard view
         /// </summary>
-        /// <param name="shouldEnable"></param>
-        public static void SetVRViewEnable(bool shouldEnable)
+        /// <param name="cardboardViewOn"></param>
+        public static void SetCardboardViewOn(bool cardboardViewOn)
         {
-            enableVRView = shouldEnable;
-            enableVRViewChangedEvent?.Invoke();
+            isCardboardViewOn = cardboardViewOn;
+            isCardboardViewOnChangedEvent?.Invoke();
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace CardboardXR
 
             retrieving = false;
 
-            deviceParamsChangeEvent?.Invoke();
+            deviceParamsChangedEvent?.Invoke();
         }
 
         private static void InitDeviceProfile()
@@ -165,7 +165,7 @@ namespace CardboardXR
 
             if (par.Item2 == 0 && !Application.isEditor)
             {
-                profileAvailable = false;
+                isProfileAvailable = false;
                 LoadDefaultProfile();
                 par = CardboardQrCode.GetDeviceParamsPointer();
             }
@@ -182,13 +182,13 @@ namespace CardboardXR
                 //todo do we need to destroy it before create it?
 
                 CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
-                profileAvailable = true;
+                isProfileAvailable = true;
             }
         }
 
         private static void LoadDefaultProfile()
         {
-            if (profileAvailable)
+            if (isProfileAvailable)
                 return;
 
             SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
@@ -196,7 +196,7 @@ namespace CardboardXR
 
         private static void InitCameraProperties()
         {
-            if (!profileAvailable)
+            if (!isProfileAvailable)
                 return;
 
             CardboardLensDistortion.RetrieveEyeMeshes();

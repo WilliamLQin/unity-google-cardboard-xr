@@ -27,14 +27,14 @@ namespace CardboardXRDemo
 
         private void OnEnable()
         {
-            CardboardManager.deviceParamsChangeEvent += RefreshCameraProperty;
-            CardboardManager.deviceParamsChangeEvent += DeviceParamsChanged;
+            CardboardManager.deviceParamsChangedEvent += RefreshCameraProperty;
+            CardboardManager.deviceParamsChangedEvent += DeviceParamsChanged;
         }
 
         private void OnDisable()
         {
-            CardboardManager.deviceParamsChangeEvent -= RefreshCameraProperty;
-            CardboardManager.deviceParamsChangeEvent -= DeviceParamsChanged;
+            CardboardManager.deviceParamsChangedEvent -= RefreshCameraProperty;
+            CardboardManager.deviceParamsChangedEvent -= DeviceParamsChanged;
         }
 
         // Update is called once per frame

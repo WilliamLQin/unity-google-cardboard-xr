@@ -23,7 +23,7 @@ namespace CardboardXR
             if (UseCardboardHeadTracker)
             {
                 CardboardHeadTracker.UpdatePose();
-                if (CardboardManager.enableVRView)
+                if (CardboardManager.isCardboardViewOn)
                 {
                     targetTransform.localPosition = CardboardHeadTracker.trackerUnityPosition;
                     targetTransform.localRotation = CardboardHeadTracker.trackerUnityRotation;
