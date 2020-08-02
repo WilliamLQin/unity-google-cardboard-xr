@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2266509654331334813}
   - component: {fileID: 2266509654331334810}
   - component: {fileID: 2266509654638412763}
+  - component: {fileID: 154975847}
   m_Layer: 0
   m_Name: CardboardCamera
   m_TagString: MainCamera
@@ -98,7 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bc54e22e0dcc474687a9c2b04be393c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultEnableCardboardView: 0
 --- !u!114 &2266509654638412763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,6 +113,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetTransform: {fileID: 0}
   moveSpeed: 10
+--- !u!114 &154975847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2266509654331334808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31f7eca8ef5d24cd98304a82ac1c076a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseCardboardHeadTracker: 1
 --- !u!1001 &7313187728271144422
 PrefabInstance:
   m_ObjectHideFlags: 0

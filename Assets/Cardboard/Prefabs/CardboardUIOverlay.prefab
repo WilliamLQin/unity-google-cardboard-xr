@@ -773,6 +773,7 @@ GameObject:
   - component: {fileID: 6631391488088755007}
   - component: {fileID: 6631391488088755006}
   - component: {fileID: 6631391488088754993}
+  - component: {fileID: 7945683540174055750}
   m_Layer: 5
   m_Name: CardboardUIOverlay
   m_TagString: Untagged
@@ -887,6 +888,19 @@ MonoBehaviour:
   useScanQRButton: 1
   useCloseCardboardButton: 1
   useSplitLine: 1
+--- !u!114 &7945683540174055750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6631391488088754992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e5a336e9547f4b63afad52e58bb9d20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultEnableCardboardView: 0
 --- !u!1 &7148465405207920087
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,9 +11,6 @@ namespace CardboardXR
     [RequireComponent(typeof(Camera))]
     public class CardboardMainCamera: MonoBehaviour
     {
-        [SerializeField]
-        private bool defaultEnableCardboardView;
-
         private Camera mainCamera;
         private Camera leftCamera;
         private Camera rightCamera;
@@ -37,7 +34,7 @@ namespace CardboardXR
             SetupRenderTexture();
 
             CardboardManager.InitCardboard();
-            CardboardManager.SetCardboardViewOn(defaultEnableCardboardView);
+            CardboardManager.SetCardboardViewOn(false);
         }
 
         private Camera SpawnCamera(string name)

@@ -89,8 +89,7 @@ namespace CardboardXR
             closeCardboardButton.gameObject.SetActive(useCloseCardboardButton && isVREnabled);
             splitLine.SetActive(useSplitLine && isVREnabled);
 
-            // openCardboardButton.gameObject.SetActive(useOpenCardboardButton && !isVREnabled);
-            openCardboardButton.gameObject.SetActive(useOpenCardboardButton && true);
+            openCardboardButton.gameObject.SetActive(useOpenCardboardButton && !isVREnabled);
         }
 
         private void SetEnableQROverlay(bool shouldEnable)
@@ -100,36 +99,20 @@ namespace CardboardXR
 #endregion
 
 #region Button events
-        // Scans QR code and enables Cardboard view
         private void ScanQRCode()
         {
-            // Screen.orientation = ScreenOrientation.LandscapeLeft;
-            // CardboardManager.SetCardboardViewOn(true);
-            CardboardManager.ScanQrCode();
+            CardboardSession.StartScanQRCode();
             SetEnableQROverlay(true);
         }
 
-        // Switches to Cardboard view
         private void OpenCardboardView()
         {
-            StartCoroutine(EnableCardboardViewCoroutine());
-        }
-
-        private IEnumerator EnableCardboardViewCoroutine()
-        {
-            while (Screen.width < Screen.height && Screen.orientation != ScreenOrientation.LandscapeLeft)
-            {
-                Screen.orientation = ScreenOrientation.LandscapeLeft;
-                yield return new WaitForEndOfFrame();
-            }
-            CardboardManager.SetCardboardViewOn(true);
-            CardboardManager.RefreshParameters();
+            CardboardSession.EnableCardboardView();
         }
 
         private void CloseCardboardView()
         {
-            CardboardManager.SetCardboardViewOn(false);
-            Screen.orientation = ScreenOrientation.AutoRotation;
+            CardboardSession.DisableCardboardView();
         }
 
         private void ContinueClicked()
