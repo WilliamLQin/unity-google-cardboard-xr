@@ -8,33 +8,20 @@ using UnityEngine.Rendering;
 
 namespace CardboardXR
 {
+    [RequireComponent(typeof(Camera))]
     public class CardboardMainCamera: MonoBehaviour
     {
-        //Only used in dontDestroyAndSingleton
-        private static CardboardMainCamera instance;
+        [SerializeField]
+        private bool defaultEnableCardboardView;
 
-        [Header("Cameras")]
-        [SerializeField]
-        private Camera novrCam;
-        [SerializeField]
-        private Camera leftCam;
-        [SerializeField]
-        private Camera rightCam;
-        [SerializeField]
-        private GameObject vrCamGroup;
-        [SerializeField]
-        private GameObject novrCamGroup;
-
-        [Header("Options")]
-        [SerializeField]
-        private bool defaultEnableVRView;
-        [Tooltip(
-            "Set this GameObject DontDestroyOnLoad and Singleton. If it's not needed or any parent GameObject already have DontDestroyOnLoad, disable it")]
-        [SerializeField]
-        private bool dontDestroyAndSingleton = true;
+        private Camera mainCamera;
+        private Camera leftCamera;
+        private Camera rightCamera;
 
         private RenderTextureDescriptor eyeRenderTextureDesc;
-        private bool overlayIsOpen;
+
+        private const string LEFT_CAMERA_NAME = "CardboardLeftCamera";
+        private const string RIGHT_CAMERA_NAME = "CardboardRightCamera";
 
         private void Awake()
         {
@@ -43,24 +30,24 @@ namespace CardboardXR
 
             #endif
 
-            if (dontDestroyAndSingleton)
-            {
-                if (instance == null)
-                {
-                    DontDestroyOnLoad(gameObject);
-                    instance = this;
-                }
-                else if (instance != this)
-                {
-                    Destroy(gameObject);
-                    return;
-                }
-            }
+            mainCamera = GetComponent<Camera>();
+            leftCamera = SpawnCamera(LEFT_CAMERA_NAME);
+            rightCamera = SpawnCamera(RIGHT_CAMERA_NAME);
 
             SetupRenderTexture();
 
             CardboardManager.InitCardboard();
-            CardboardManager.SetVRViewEnable(defaultEnableVRView);
+            CardboardManager.SetVRViewEnable(defaultEnableCardboardView);
+        }
+
+        private Camera SpawnCamera(string name)
+        {
+            GameObject cameraGO = new GameObject(name);
+            cameraGO.transform.parent = transform;
+            Camera cam = cameraGO.AddComponent<Camera>();
+            DuplicateCameraSettings(mainCamera, cam);
+            cam.allowHDR = false;
+            return cam;
         }
 
         // Start is called before the first frame update
@@ -68,14 +55,14 @@ namespace CardboardXR
         {
             RefreshCamera();
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
-            SwitchVRCamera();
-            CardboardManager.enableVRViewChangedEvent += SwitchVRCamera;
+            OnCardboardEnabledChanged();
+            CardboardManager.enableVRViewChangedEvent += OnCardboardEnabledChanged;
         }
 
         private void OnDestroy()
         {
             CardboardManager.deviceParamsChangeEvent -= RefreshCamera;
-            CardboardManager.enableVRViewChangedEvent -= SwitchVRCamera;
+            CardboardManager.enableVRViewChangedEvent -= OnCardboardEnabledChanged;
         }
 
         private void SetupRenderTexture()
@@ -84,8 +71,8 @@ namespace CardboardXR
 
             RenderTexture newLeft = new RenderTexture(eyeRenderTextureDesc);
             RenderTexture newRight = new RenderTexture(eyeRenderTextureDesc);
-            leftCam.targetTexture = newLeft;
-            rightCam.targetTexture = newRight;
+            leftCamera.targetTexture = newLeft;
+            rightCamera.targetTexture = newRight;
 
             CardboardManager.SetRenderTexture(newLeft, newRight);
         }
@@ -112,10 +99,13 @@ namespace CardboardXR
             #endif
         }
 
-        private void SwitchVRCamera()
+        private void OnCardboardEnabledChanged()
         {
-            vrCamGroup.SetActive(CardboardManager.enableVRView);
-            novrCamGroup.SetActive(!CardboardManager.enableVRView);
+            bool cardboardViewOn = CardboardManager.enableVRView;
+            mainCamera.enabled = !cardboardViewOn;
+            leftCamera.enabled = cardboardViewOn;
+            rightCamera.enabled = cardboardViewOn;
+            // Post camera is enabled/disabled via CardboardPostCamera script
         }
 
         private void RefreshCamera()
@@ -125,12 +115,12 @@ namespace CardboardXR
                 return;
             }
 
-            RefreshCamera_Eye(leftCam,
+            RefreshCamera_Eye(leftCamera,
                 CardboardManager.projectionMatrixLeft, CardboardManager.eyeFromHeadMatrixLeft);
-            RefreshCamera_Eye(rightCam,
+            RefreshCamera_Eye(rightCamera,
                 CardboardManager.projectionMatrixRight, CardboardManager.eyeFromHeadMatrixRight);
 
-
+            // Deprecated method of setting eye position
             // if (CardboardManager.deviceParameter != null)
             // {
             //     leftCam.transform.localPosition =
@@ -155,9 +145,20 @@ namespace CardboardXR
             }
         }
 
-        // Update is called once per frame
-        // void Update()
-        // {
-        // }
+        private void LateUpdate()
+        {
+            DuplicateCameraSettings(mainCamera, leftCamera);
+            DuplicateCameraSettings(mainCamera, rightCamera);
+        }
+
+        private void DuplicateCameraSettings(Camera sourceCamera, Camera destinationCamera)
+        {
+            destinationCamera.clearFlags = sourceCamera.clearFlags;
+            destinationCamera.backgroundColor = sourceCamera.backgroundColor;
+            destinationCamera.cullingMask = sourceCamera.cullingMask;
+            destinationCamera.nearClipPlane = sourceCamera.nearClipPlane;
+            destinationCamera.farClipPlane = sourceCamera.farClipPlane;
+            destinationCamera.depth = sourceCamera.depth;
+        }
     }
 }

@@ -24,12 +24,15 @@ namespace CardboardXR
         void Start()
         {
             ApplyRenderTexture();
+            OnCardboardEnabledChanged();
             CardboardManager.renderTextureResetEvent += ApplyRenderTexture;
+            CardboardManager.enableVRViewChangedEvent += OnCardboardEnabledChanged;
         }
 
         void OnDestroy()
         {
             CardboardManager.renderTextureResetEvent -= ApplyRenderTexture;
+            CardboardManager.enableVRViewChangedEvent -= OnCardboardEnabledChanged;
         }
 
         private void OnPostRender()
@@ -47,6 +50,11 @@ namespace CardboardXR
         {
             eyeMaterialLeft.mainTexture = CardboardManager.viewTextureLeft;
             eyeMaterialRight.mainTexture = CardboardManager.viewTextureRight;
+        }
+
+        private void OnCardboardEnabledChanged()
+        {
+            postCam.enabled = CardboardManager.enableVRView;
         }
     }
 }

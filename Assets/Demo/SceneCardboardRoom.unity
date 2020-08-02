@@ -190,6 +190,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75d847e83f9d341439dcddc346ad1794, type: 3}
+--- !u!1 &154975846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2266509654331334808, guid: eeb2878f7a84c8743bc229cfcb584f78,
+    type: 3}
+  m_PrefabInstance: {fileID: 1218529325}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &154975847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154975846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31f7eca8ef5d24cd98304a82ac1c076a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseCardboardHeadTracker: 1
 --- !u!1001 &1218529325
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -204,7 +223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2266509654331334810, guid: eeb2878f7a84c8743bc229cfcb584f78,
         type: 3}
-      propertyPath: dontDestroyAndSingleton
+      propertyPath: defaultEnableCardboardView
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2266509654331334811, guid: eeb2878f7a84c8743bc229cfcb584f78,
