@@ -8,120 +8,66 @@ namespace CardboardXR
 {
     public class CardboardUIOverlay: MonoBehaviour
     {
-        //Only used in dontDestroyAndSingleton
-        private static CardboardUIOverlay instance;
 
-        [Header("NoVRViewElements")]
-        public Button switchVRButton;
+        [Header("View Elements")]
+        [SerializeField]
+        private Button openCardboardButton;
+        [SerializeField]
+        private Button scanQRButton;
+        [SerializeField]
+        private Button closeCardboardButton;
+        [SerializeField]
+        private GameObject splitLine;
 
-        [Header("VRViewElements")]
-        public Button scanQRButton;
-        public Button closeButton;
-        public GameObject splitLine;
-
-        [Header("QROverlay")]
-        public Text profileParamText;
-        public Button continueButton;
-        public GameObject continuePanel;
+        [Header("QR Overlay")]
+        [SerializeField]
+        private Text profileParamText;
+        [SerializeField]
+        private Button continueButton;
+        [SerializeField]
+        private GameObject continuePanel;
 
         [Header("Options")]
-        [SerializeField]
-        private bool dontDestroyAndSingleton;
+        public bool useOpenCardboardButton;
+        public bool useScanQRButton;
+        public bool useCloseCardboardButton;
+        public bool useSplitLine;
 
-        private bool overlayIsOpen;
-
+#region MonoBehaviour Events
         private void Awake()
         {
-            if (dontDestroyAndSingleton)
-            {
-                if (instance == null)
-                {
-                    DontDestroyOnLoad(gameObject);
-                    instance = this;
-                }
-                else if (instance != this)
-                {
-                    Destroy(gameObject);
-                    return;
-                }
-            }
-
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
-            switchVRButton.onClick.AddListener(SwitchVRView);
-            closeButton.onClick.AddListener(CloseVRView);
+            openCardboardButton.onClick.AddListener(OpenCardboardView);
+            closeCardboardButton.onClick.AddListener(CloseCardboardView);
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            VRViewChanged();
-            CardboardManager.deviceParamsChangeEvent += TriggerRefresh;
-            CardboardManager.enableVRViewChangedEvent += VRViewChanged;
+            OnCardboardEnabledChanged();
+            CardboardManager.deviceParamsChangeEvent += OnDeviceParamsChanged;
+            CardboardManager.enableVRViewChangedEvent += OnCardboardEnabledChanged;
         }
 
         private void OnDestroy()
         {
-            CardboardManager.deviceParamsChangeEvent -= TriggerRefresh;
-            CardboardManager.enableVRViewChangedEvent -= VRViewChanged;
+            CardboardManager.deviceParamsChangeEvent -= OnDeviceParamsChanged;
+            CardboardManager.enableVRViewChangedEvent -= OnCardboardEnabledChanged;
         }
+#endregion
 
-        // Scans QR code and enables VR view
-        private void ScanQRCode()
-        {
-            Screen.orientation = ScreenOrientation.LandscapeLeft;
-            CardboardManager.SetVRViewEnable(true);
-            CardboardManager.ScanQrCode();
-            SetEnableQROverlay(true);
-        }
-
-        // Switches CardboardXR view to non-CardboardXR view
-        private void SwitchVRView()
-        {
-            CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
-        }
-
-        // Resets orientation
-        private void CloseVRView()
-        {
-            Screen.orientation = ScreenOrientation.AutoRotation;
-        }
-
-        private void VRViewChanged()
+#region Observers
+        private void OnCardboardEnabledChanged()
         {
             SetEnableQROverlay(false);
-            SetUIStatus(CardboardManager.enableVRView);
+            UpdateUIStatus();
+            if (CardboardManager.enableVRView)
+                OnDeviceParamsChanged();
         }
 
-        private void SetUIStatus(bool isVREnabled)
+        private void OnDeviceParamsChanged()
         {
-            scanQRButton.gameObject.SetActive(true);
-            closeButton.gameObject.SetActive(true);
-            splitLine.SetActive(isVREnabled);
-
-            switchVRButton.gameObject.SetActive(true);
-
-            if (isVREnabled)
-                TriggerRefresh();
-        }
-
-        private void SetEnableQROverlay(bool shouldEnable)
-        {
-            continuePanel.SetActive(shouldEnable);
-            overlayIsOpen = shouldEnable;
-        }
-
-        private void ContinueClicked()
-        {
-            TriggerRefresh();
-
-            SetEnableQROverlay(false);
-        }
-
-        private void TriggerRefresh()
-        {
-            //CardboardManager.RefreshParameters();
-
             if (CardboardManager.enableVRView && !CardboardManager.profileAvailable)
             {
                 SetEnableQROverlay(true);
@@ -133,5 +79,64 @@ namespace CardboardXR
                     CardboardManager.deviceParameter.Vendor + "\r\n" + CardboardManager.deviceParameter.Model;
             }
         }
+#endregion
+
+#region Helper functions
+        private void UpdateUIStatus()
+        {
+            bool isVREnabled = CardboardManager.enableVRView;
+
+            scanQRButton.gameObject.SetActive(useScanQRButton && isVREnabled);
+            closeCardboardButton.gameObject.SetActive(useCloseCardboardButton && isVREnabled);
+            splitLine.SetActive(useSplitLine && isVREnabled);
+
+            // openCardboardButton.gameObject.SetActive(useOpenCardboardButton && !isVREnabled);
+            openCardboardButton.gameObject.SetActive(useOpenCardboardButton && true);
+        }
+
+        private void SetEnableQROverlay(bool shouldEnable)
+        {
+            continuePanel.SetActive(shouldEnable);
+        }
+#endregion
+
+#region Button events
+        // Scans QR code and enables Cardboard view
+        private void ScanQRCode()
+        {
+            // Screen.orientation = ScreenOrientation.LandscapeLeft;
+            // CardboardManager.SetVRViewEnable(true);
+            CardboardManager.ScanQrCode();
+            SetEnableQROverlay(true);
+        }
+
+        // Switches to Cardboard view
+        private void OpenCardboardView()
+        {
+            StartCoroutine(EnableCardboardViewCoroutine());
+        }
+
+        private IEnumerator EnableCardboardViewCoroutine()
+        {
+            while (Screen.width < Screen.height && Screen.orientation != ScreenOrientation.LandscapeLeft)
+            {
+                Screen.orientation = ScreenOrientation.LandscapeLeft;
+                yield return new WaitForEndOfFrame();
+            }
+            CardboardManager.SetVRViewEnable(true);
+            CardboardManager.RefreshParameters();
+        }
+
+        private void CloseCardboardView()
+        {
+            CardboardManager.SetVRViewEnable(false);
+            Screen.orientation = ScreenOrientation.AutoRotation;
+        }
+
+        private void ContinueClicked()
+        {
+            SetEnableQROverlay(false);
+        }
+#endregion
     }
 }
