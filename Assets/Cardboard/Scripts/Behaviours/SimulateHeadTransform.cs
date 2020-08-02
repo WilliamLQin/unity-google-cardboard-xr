@@ -8,6 +8,8 @@ namespace CardboardXR
     {
         [SerializeField]
         private Transform targetTransform;
+        [SerializeField]
+        private float moveSpeed;
 
         private void Awake()
         {
@@ -53,6 +55,10 @@ namespace CardboardXR
                 transform.localEulerAngles = currentEulerAngle;
             }
 
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveVertical = Input.GetAxis("Vertical");
+            Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical) * moveSpeed * Time.deltaTime;
+            transform.position += transform.TransformVector(movement);
         }
     }
 }
