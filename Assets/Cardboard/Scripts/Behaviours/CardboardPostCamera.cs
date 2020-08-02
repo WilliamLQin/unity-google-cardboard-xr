@@ -27,6 +27,11 @@ namespace CardboardXR
             CardboardManager.renderTextureResetEvent += ApplyRenderTexture;
         }
 
+        void OnDestroy()
+        {
+            CardboardManager.renderTextureResetEvent -= ApplyRenderTexture;
+        }
+
         private void OnPostRender()
         {
             if (!CardboardManager.profileAvailable)
