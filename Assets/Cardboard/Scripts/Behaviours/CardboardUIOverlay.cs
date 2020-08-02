@@ -42,8 +42,7 @@ namespace CardboardXR
             closeCardboardButton.onClick.AddListener(CloseCardboardView);
         }
 
-        // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             OnCardboardEnabledChanged();
             CardboardManager.deviceParamsChangeEvent += OnDeviceParamsChanged;

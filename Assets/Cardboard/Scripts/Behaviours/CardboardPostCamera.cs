@@ -21,7 +21,7 @@ namespace CardboardXR
         }
 
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             ApplyRenderTexture();
             OnCardboardEnabledChanged();
@@ -29,7 +29,7 @@ namespace CardboardXR
             CardboardManager.enableVRViewChangedEvent += OnCardboardEnabledChanged;
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             CardboardManager.renderTextureResetEvent -= ApplyRenderTexture;
             CardboardManager.enableVRViewChangedEvent -= OnCardboardEnabledChanged;
