@@ -6,7 +6,7 @@ namespace CardboardXR
     public static class CardboardManager
     {
         private static bool initiated;
-        private static bool retriving;
+        private static bool retrieving;
         private static Pose headPoseTemp;
 
         public static DeviceParams deviceParameter { get; private set; }
@@ -28,6 +28,9 @@ namespace CardboardXR
         public static event Action renderTextureResetEvent;
         public static event Action enableVRViewChangedEvent;
 
+        /// <summary>
+        /// Initializes the Cardboard session
+        /// </summary>
         public static void InitCardboard()
         {
             if (!initiated)
@@ -41,72 +44,68 @@ namespace CardboardXR
                 CardboardHeadTracker.ResumeTracker();
 
                 CardboardQrCode.RegisterObserver();
-                Application.quitting += ApplicationQuit;
+                Application.quitting += () => {
+                    CardboardQrCode.DeRegisterObserver();
+                };
                 initiated = true;
             }
 
             RefreshParameters();
         }
 
-        private static void ApplicationQuit()
-        {
-            CardboardQrCode.DeRegisterObserver();
-        }
-
-        private static void LoadDefaultProfile()
-        {
-            if (profileAvailable)
-                return;
-
-            SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
-        }
-
-        //This method can be used to change current device paramters
+        /// <summary>
+        /// Changes the current device parameters  
+        /// i.e. load a preset cardboard profile from url (instead of a QR code)
+        /// </summary>
+        /// <param name="url"></param>
         public static void SetCardboardProfile(string url)
         {
             CardboardQrCode.SetCardboardProfile(url);
         }
 
-        //This method will set cardbaord profile ONLY when cardboard qr has not yet been scanned by camera.
-        //This behaviour is the same as the legacy cardboard gvr_set_default_viewer_profile
+        /// <summary>
+        /// Sets the cardboard profile ONLY when a cardboard QR code has not yet been scanned by camera.  
+        /// This behaviour is the same as the legacy cardboard gvr_set_default_viewer_profile
+        /// </summary>
+        /// <param name="url"></param>
         public static void SetCardboardInitialProfile(string url)
         {
             CardboardQrCode.SetCardboardInitialProfile(url);
         }
 
+        /// <summary>
+        /// Brings up the QR code scanning intent to load a new profile
+        /// </summary>
         public static void ScanQrCode()
         {
             CardboardQrCode.StartScanQrCode();
         }
 
-        public static void RefreshParameters()
-        {
-            CardboardQrCode.RetrieveDeviceParam();
-
-            if (retriving)
-                return;
-
-            retriving = true;
-
-            InitDeviceProfile();
-            InitCameraProperties();
-
-            retriving = false;
-
-            deviceParamsChangeEvent?.Invoke();
-        }
-
+        /// <summary>
+        /// Enables or disables the Cardboard view
+        /// </summary>
+        /// <param name="shouldEnable"></param>
         public static void SetVRViewEnable(bool shouldEnable)
         {
             enableVRView = shouldEnable;
             enableVRViewChangedEvent?.Invoke();
         }
 
+        /// <summary>
+        /// Recenters the camera in the head tracker
+        /// </summary>
+        /// <param name="horizontalOnly"></param>
         public static void RecenterCamera(bool horizontalOnly = true)
         {
             CardboardHeadTracker.RecenterCamera(horizontalOnly);
         }
 
+        /// <summary>
+        /// Gets the current head tracker pose  
+        /// If withUpdate is set to false, this method will return the pose from the last update
+        /// </summary>
+        /// <param name="withUpdate"></param>
+        /// <returns></returns>
         public static Pose GetHeadPose(bool withUpdate = false)
         {
             if (withUpdate)
@@ -118,6 +117,46 @@ namespace CardboardXR
             headPoseTemp.rotation = CardboardHeadTracker.trackerUnityRotation;
 
             return headPoseTemp;
+        }
+
+        /// <summary>
+        /// Sets the target cardboard eye render textures
+        /// </summary>
+        /// <param name="newLeft"></param>
+        /// <param name="newRight"></param>
+        public static void SetRenderTexture(RenderTexture newLeft, RenderTexture newRight)
+        {
+            if (viewTextureLeft != null)
+                viewTextureLeft.Release();
+            if (viewTextureRight != null)
+                viewTextureRight.Release();
+
+            viewTextureLeft = newLeft;
+            viewTextureRight = newRight;
+
+            renderTextureResetEvent?.Invoke();
+        }
+
+        /// <summary>
+        /// Refreshes the parameters set by the Cardboard profile  
+        /// This method should be run whenever the Cardboard profile is updated and when 
+        /// the device orientation has changed.
+        /// </summary>
+        public static void RefreshParameters()
+        {
+            CardboardQrCode.RetrieveDeviceParam();
+
+            if (retrieving)
+                return;
+
+            retrieving = true;
+
+            InitDeviceProfile();
+            InitCameraProperties();
+
+            retrieving = false;
+
+            deviceParamsChangeEvent?.Invoke();
         }
 
         private static void InitDeviceProfile()
@@ -147,6 +186,14 @@ namespace CardboardXR
             }
         }
 
+        private static void LoadDefaultProfile()
+        {
+            if (profileAvailable)
+                return;
+
+            SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
+        }
+
         private static void InitCameraProperties()
         {
             if (!profileAvailable)
@@ -167,19 +214,6 @@ namespace CardboardXR
 
             viewMeshLeft = CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item1);
             viewMeshRight = CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item2);
-        }
-
-        public static void SetRenderTexture(RenderTexture newLeft, RenderTexture newRight)
-        {
-            if (viewTextureLeft != null)
-                viewTextureLeft.Release();
-            if (viewTextureRight != null)
-                viewTextureRight.Release();
-
-            viewTextureLeft = newLeft;
-            viewTextureRight = newRight;
-
-            renderTextureResetEvent?.Invoke();
         }
     }
 }
