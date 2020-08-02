@@ -44,7 +44,7 @@ namespace CardboardXRDemo
                 CardboardHeadTracker.trackerRawRotation.eulerAngles,
                 CardboardHeadTracker.trackerUnityRotation.eulerAngles);
 
-            Pose headPose = CardboardManager.GetHeadPose();
+            Pose headPose = CardboardManager.GetHeadPose(false);
             testHeadFollower.localRotation = headPose.rotation;
             testHeadFollower.localPosition = headPose.position;
         }

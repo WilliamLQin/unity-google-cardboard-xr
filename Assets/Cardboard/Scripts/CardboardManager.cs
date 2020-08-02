@@ -106,7 +106,7 @@ namespace CardboardXR
         /// </summary>
         /// <param name="withUpdate"></param>
         /// <returns></returns>
-        public static Pose GetHeadPose(bool withUpdate = false)
+        public static Pose GetHeadPose(bool withUpdate = true)
         {
             if (withUpdate)
             {
